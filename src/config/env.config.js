@@ -1,17 +1,16 @@
-const Joi = require('joi');
+import Joi from 'joi';
 
-// Definir el esquema de validación para las variables de entorno
+// Validación de variables de entorno
 const envSchema = Joi.object({
   PORT: Joi.number().required(),
   MONGO_URI: Joi.string().required(),
   JWT_SECRET: Joi.string().required(),
-}).unknown(true); // Permite otras variables no definidas en el esquema
+  MAIL_USER: Joi.string().email(),
+  MAIL_PASSWORD: Joi.string()
+}).unknown(true);
 
-// Validar las variables de entorno
 const { error, value } = envSchema.validate(process.env);
 
-if (error) {
-  throw new Error(`Configuración de entorno inválida: ${error.message}`);
-}
+if (error) throw new Error(`Config validation error: ${error.message}`);
 
-module.exports = value;
+export default value;

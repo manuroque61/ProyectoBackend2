@@ -1,28 +1,32 @@
-const express = require('express');
-const mongoose = require('mongoose');
-const passport = require('passport');
-const cookieParser = require('cookie-parser');
-const authRoutes = require('./routes/auth.routes');
-const { connectDB } = require('./utils/utils');
-const envConfig = require('./config/env.config'); // Importar el validador
-
-require('dotenv').config();
+import express from 'express';
+import mongoose from 'mongoose';
+import cookieParser from 'cookie-parser';
+import cors from 'cors';
+import config from './config/env.config.js';
+import initializePassport from './config/passport.config.js';
+import cartRoutes from './routes/carts.routes.js';
+import userRoutes from './routes/users.routes.js';
 
 const app = express();
 
-// Middlewares
+// Middlewares básicos
+app.use(cors({ origin: config.FRONTEND_URL, credentials: true }));
 app.use(express.json());
 app.use(cookieParser());
-app.use(passport.initialize());
 
-// Conexión a la base de datos
-connectDB();
+// Database
+mongoose.connect(config.MONGO_URI)
+  .then(() => console.log('DB connected'))
+  .catch(err => console.error('DB connection error:', err));
 
-// Rutas
-app.use('/api/sessions', authRoutes);
+// Passport
+initializePassport();
 
-// Iniciar servidor
-const PORT = envConfig.PORT; // Usar la variable validada
-app.listen(PORT, () => {
-  console.log(`Servidor corriendo en http://localhost:${PORT}`);
+// Routes
+app.use('/api/carts', cartRoutes);
+app.use('/api/users', userRoutes);
+
+// Server
+app.listen(config.PORT, () => {
+  console.log(`Server running on port ${config.PORT}`);
 });
