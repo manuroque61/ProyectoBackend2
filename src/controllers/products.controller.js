@@ -28,4 +28,27 @@ export class ProductsController {
       res.status(400).json({ status: 'error', error: error.message });
     }
   };
+  createProduct = async (req, res) => {
+    try {
+      const productData = req.body;
+      const user = req.user; // Obtenido del middleware de autenticación
+
+      // Solo admin puede crear productos sin dueño
+      if (user.role !== 'admin' && !productData.owner) {
+        productData.owner = user.email;
+      }
+
+      const newProduct = await this.service.createProduct(productData, user.email);
+      
+      res.status(201).json({
+        status: 'success',
+        payload: newProduct
+      });
+    } catch (error) {
+      res.status(400).json({
+        status: 'error',
+        error: error.message
+      });
+    }
+  };
 }

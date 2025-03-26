@@ -16,4 +16,8 @@ export class ProductsDAO {
     const products = await Product.find(filter).lean();
     return products.map(p => new ProductDTO(p));
   }
+  async createProduct(productData) {
+    const newProduct = await Product.create(productData);
+    return new ProductDTO(newProduct.toObject());
+  }
 }

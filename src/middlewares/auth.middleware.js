@@ -21,4 +21,11 @@ export const isCartOwner = async (req, res, next) => {
     });
   }
   next();
+
+  export const canCreateProducts = (req, res, next) => {
+    if (req.user.role === 'admin' || req.user.role === 'premium') {
+      return next();
+    }
+    res.status(403).json({ error: 'Requires admin or premium role' });
+  };
 };

@@ -16,4 +16,11 @@ export class ProductsRepository {
   async getProducts(filter) {
     return await this.dao.getProducts(filter);
   }
+  async createProduct(productData) {
+    // Validación adicional de negocio
+    if (productData.price <= 0) {
+      throw new Error('Price must be greater than 0');
+    }
+    return await this.dao.createProduct(productData);
+  }
 }
